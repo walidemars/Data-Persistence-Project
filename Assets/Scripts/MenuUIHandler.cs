@@ -27,6 +27,11 @@ public class MenuUIHandler : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
+    public void GoToHighScores()
+    {
+        SceneManager.LoadScene(2);
+    }
+
     public void Exit()
     {
         GameManager.Instance.SaveBestPointsAndName();
