@@ -11,9 +11,21 @@ public class GameManager : MonoBehaviour
 
     public static string bestScoreText;
     public string playerName;
-    public string bestName;
     public int bestScore = 0;
+    List<PlayerScore> bestFiveScores = new List<PlayerScore>();
 
+    [System.Serializable]
+    struct PlayerScore
+    {
+        public string Name;
+        public int Score;
+
+        public PlayerScore(string name, int score)
+        {
+            Name = name;
+            Score = score;
+        }
+    }
 
     private void Start()
     {
@@ -32,58 +44,81 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        LoadBestPointsAndName();
-    }
+        if (bestFiveScores == null)
+        {
+            bestFiveScores = new List<PlayerScore>();
+        }
 
-    public string NewRecord()
-    {
-        if (bestName.Length == 0)
-        {
-            //Debug.Log("Имя не введено");
-            return "Best Score: " + "Name" + ": " + bestScore;
-        }
-        else
-        {
-            return "Best Score: " + bestName + ": " + bestScore;
-        }
+        LoadBestPointsAndName();
     }
 
     [System.Serializable]
     class SaveData
     {
-        public int saveScore;
-        public string saveName;
+        public List<PlayerScore> scores;
     }
 
     public void SaveBestPointsAndName()
     {
         SaveData data = new SaveData();
-        data.saveName = bestName;
-        data.saveScore = bestScore;
+        data.scores = bestFiveScores;
 
         string json = JsonUtility.ToJson(data);
+        string path = Application.persistentDataPath + "/savefile.json";
 
-        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+        Debug.Log("Сохранение данных в: " + path);
+        File.WriteAllText(path, json);    
     }
 
     public void LoadBestPointsAndName()
     {
         string path = Application.persistentDataPath + "/savefile.json";
+        Debug.Log("Загрузка данных из: " + path); // Отладочный вывод
+
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            bestName = data.saveName;
-            bestScore = data.saveScore;
+            bestFiveScores = data.scores;
+        }
+        else
+        {
+            Debug.Log("Файл сохранения не найден. Создан новый список результатов.");
+            bestFiveScores = new List<PlayerScore>();
         }
     }
 
-    public void BestName(int cuurentPoints)
+    public void AddBestScore(string _name, int _score)
     {
-        if (cuurentPoints > bestScore)
+        if (bestFiveScores == null)
         {
-            bestName = playerName;
+            bestFiveScores = new List<PlayerScore>();
         }
+
+        bestFiveScores.Add(new PlayerScore(_name, _score));
+        bestFiveScores.Sort((a, b) => b.Score.CompareTo(a.Score));
+        if(bestFiveScores.Count > 5)
+        {
+            bestFiveScores.RemoveAt(5);
+        }
+    }
+
+    public string ToStringScores()
+    {
+        string scoresText = "";
+        if (bestFiveScores == null || bestFiveScores.Count == 0)
+        {
+            scoresText = "No records";
+        }
+        else
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                scoresText += i+1 + ". " + bestFiveScores[i].Name + ": " + bestFiveScores[i].Score + '\n';
+            }
+        }
+
+        return scoresText;
     }
 }

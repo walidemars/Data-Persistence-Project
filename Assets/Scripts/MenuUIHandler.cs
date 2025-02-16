@@ -16,11 +16,6 @@ public class MenuUIHandler : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI bestScoreText;
 
-    private void Start()
-    {
-        bestScoreText.text = GameManager.Instance.NewRecord();
-    }
-
     public void StartNew()
     {
         GameManager.Instance.playerName = nameText.text;
