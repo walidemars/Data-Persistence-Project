@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     public int bestScore = 0;
     List<PlayerScore> bestFiveScores = new List<PlayerScore>();
 
+    public float maxBallSpeed;
+    public float scoreMultiplier = 1;
+
     [System.Serializable]
     struct PlayerScore
     {

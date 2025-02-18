@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,11 +14,13 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
-    //public TextMeshProUGUI BestScoreText;
+
     public GameObject GameOverText;
+    public GameObject BackToMenuButton;
     
     private bool m_Started = false;
     private int m_Points;
+    private float m_ScoreMult;
     
     private bool m_GameOver = false;
 
@@ -25,7 +28,7 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_ScoreMult = GameManager.Instance.scoreMultiplier;
         //BestScoreText.text = GameManager.Instance.NewRecord();
 
         const float step = 0.6f;
@@ -70,7 +73,7 @@ public class MainManager : MonoBehaviour
 
     void AddPoint(int point)
     {
-        m_Points += point;
+        m_Points += (int)Math.Round(point * m_ScoreMult); //point * m_ScoreMult;
         ScoreText.text = $"Score : {m_Points}";
     }
 
@@ -84,5 +87,11 @@ public class MainManager : MonoBehaviour
 
         m_GameOver = true;
         GameOverText.SetActive(true);
+        BackToMenuButton.SetActive(true);
+    }
+
+    public void BackToMainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }

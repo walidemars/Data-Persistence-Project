@@ -24,7 +24,14 @@ public class MenuUIHandler : MonoBehaviour
 
     public void GoToHighScores()
     {
+        GameManager.Instance.playerName = nameText.text;
         SceneManager.LoadScene(2);
+    }
+
+    public void GoToSettings()
+    {
+        GameManager.Instance.playerName = nameText.text;
+        SceneManager.LoadScene(3);
     }
 
     public void Exit()
